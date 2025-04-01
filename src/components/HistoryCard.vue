@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
+import { Clipboard } from '@capacitor/clipboard';
 
 const emit = defineEmits(['copy']);
 
@@ -22,8 +23,20 @@ const props = defineProps<{
   time: string,
 }>();
 
-function handleCopy() {
-  emit('copy', props.text);
+async function handleCopy() {
+  try {
+    // Copy text to clipboard using Capacitor's Clipboard API
+    await Clipboard.write({
+      string: props.text
+    });
+
+    // Emit event so parent can show notification
+    emit('copy', props.text);
+  } catch (error) {
+    console.error('Clipboard error:', error);
+    // Still emit the event so the parent component knows about the attempt
+    emit('copy', props.text);
+  }
 }
 </script>
 

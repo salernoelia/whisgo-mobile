@@ -75,12 +75,11 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { EventsOn, EventsOff } from '../wailsjs/runtime/runtime';
+import { Clipboard } from '@capacitor/clipboard';
 import HistoryCard from './components/HistoryCard.vue';
 import { useGroq } from './composables/useGroq';
 import { useAudioRecording } from './composables/useAudioRecording';
 import { useTranscriptionHistory } from './composables/useTranscriptionHistory';
-import { CopyToClipboard, HideWindow } from '../wailsjs/go/main/App';
 import { useSoundEffects } from './composables/useSoundEffects';
 import SoundSettings from './components/SoundSettings.vue';
 
@@ -158,6 +157,8 @@ const handlePlaySound = (type: 'start' | 'stop') => {
 };
 
 
+
+
 onMounted(async () => {
   try {
     // Initialize audio devices
@@ -166,19 +167,13 @@ onMounted(async () => {
     // Load saved settings
     audioPlaybackEnabled.value = JSON.parse(localStorage.getItem('audioPlaybackEnabled') || 'true');
 
-    // Listen for hotkey trigger event from Go backend
-    EventsOn('hotkey-triggered', () => {
-      toggleRecording();
-    });
+
   } catch (error) {
     console.error('Error during initialization:', error);
     recordingStatus.value = 'Failed to initialize';
   }
 });
 
-onUnmounted(() => {
-  EventsOff('hotkey-triggered');
-});
 
 async function changeDevice() {
   try {
@@ -202,7 +197,6 @@ async function toggleRecording() {
   try {
     if (isRecording.value) {
       recordingStatus.value = 'Stopping recording...';
-      HideWindow();
 
       const audioBlob = await stopRecording();
 
@@ -217,7 +211,7 @@ async function toggleRecording() {
         behavior: 'smooth'
       });
 
-      await copyToClipboard(transcription);
+      copyToClipboard(transcription);
       recordingStatus.value = 'Transcription complete and copied to clipboard';
       handlePlaySound('stop'); // Updated to use our new sound handler
     } else {
@@ -259,12 +253,22 @@ function saveModel() {
 
 async function copyToClipboard(text: string) {
   try {
-    await CopyToClipboard(text);
+    // Check if Clipboard API is available
+    if (!Clipboard) {
+      throw new Error("Clipboard API not available");
+    }
+
+    // Write the text to clipboard
+    await Clipboard.write({
+      string: text
+    });
+
     recordingStatus.value = 'Copied to clipboard';
     return true;
   } catch (error) {
     console.error('Error copying to clipboard:', error);
-    recordingStatus.value = 'Failed to copy to clipboard';
+    // More detailed error message to help with debugging
+    recordingStatus.value = `Failed to copy: ${error instanceof Error ? error.message : 'Unknown error'}`;
     return false;
   }
 }
@@ -287,6 +291,7 @@ function clearTranscriptionHistory() {
   height: 100vh;
   width: 100%;
   justify-content: center;
+  align-items: center;
   padding-top: 20px;
 }
 

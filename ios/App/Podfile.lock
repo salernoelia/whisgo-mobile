@@ -1,22 +1,28 @@
 PODS:
   - Capacitor (7.2.0):
     - CapacitorCordova
+  - CapacitorClipboard (7.0.0):
+    - Capacitor
   - CapacitorCordova (7.2.0)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
 
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorClipboard:
+    :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
   Capacitor: 106e7a4205f4618d582b886a975657c61179138d
+  CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
   CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
 
-PODFILE CHECKSUM: e5aad413742a07f9e736126612b43b6c058babcd
+PODFILE CHECKSUM: 8d16e448d571b48c94baca679948a26433e4d269
 
 COCOAPODS: 1.16.2
