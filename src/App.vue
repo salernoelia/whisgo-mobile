@@ -52,7 +52,8 @@
         </div>
         <button class="record-button" :class="{ 'recording': isRecording }" @click="toggleRecording"
           :disabled="!groqKey || isProcessing">
-          {{ isRecording ? 'Stop Recording' : 'Start Recording' }}
+          <img src="./assets/images/micro.svg" style="filter: invert(1); opacity: 0.6; width: 25px; height: 25px;"
+            alt="" srcset="">
         </button>
         <div v-if="!groqKey" class="error-message">
           Please enter your Groq API key to start recording.
@@ -206,14 +207,18 @@ async function toggleRecording() {
       addTranscription(transcription);
       currentTranscription.value = transcription;
 
-      historyArea.value?.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      setTimeout(() => {
+        if (historyArea.value) {
+          historyArea.value.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
 
       copyToClipboard(transcription);
       recordingStatus.value = 'Transcription complete and copied to clipboard';
-      handlePlaySound('stop'); // Updated to use our new sound handler
+      handlePlaySound('stop');
     } else {
       if (!groqKey.value) {
         recordingStatus.value = 'Please set your Groq API key';
@@ -253,12 +258,10 @@ function saveModel() {
 
 async function copyToClipboard(text: string) {
   try {
-    // Check if Clipboard API is available
     if (!Clipboard) {
       throw new Error("Clipboard API not available");
     }
 
-    // Write the text to clipboard
     await Clipboard.write({
       string: text
     });
@@ -267,7 +270,6 @@ async function copyToClipboard(text: string) {
     return true;
   } catch (error) {
     console.error('Error copying to clipboard:', error);
-    // More detailed error message to help with debugging
     recordingStatus.value = `Failed to copy: ${error instanceof Error ? error.message : 'Unknown error'}`;
     return false;
   }
@@ -282,7 +284,7 @@ function clearTranscriptionHistory() {
 <style>
 .container {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   gap: 20px;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -291,8 +293,10 @@ function clearTranscriptionHistory() {
   height: 100vh;
   width: 100%;
   justify-content: center;
-  align-items: center;
-  padding-top: 20px;
+
+  align-items: start;
+  padding-top: 20%;
+  overflow: visible;
 }
 
 .container-left {
@@ -307,6 +311,7 @@ function clearTranscriptionHistory() {
   flex-direction: column;
   gap: 10px;
   width: 85%;
+  overflow-y: auto;
 }
 
 .history-area {
@@ -314,7 +319,8 @@ function clearTranscriptionHistory() {
   height: 100%;
   flex-direction: column;
   gap: 10px;
-  overflow-y: scroll;
+  overflow-y: auto;
+  padding-bottom: 30px;
 }
 
 h1 {
@@ -354,13 +360,17 @@ label {
 }
 
 .record-button {
+  position: absolute;
   padding: 8px 24px;
-  width: 100%;
+  width: 80px;
+  height: 80px;
+  bottom: 25px;
+  right: 25px;
   font-size: 16px;
   background-color: #101010;
   border: 1px solid #8f8f8f;
   color: white;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
