@@ -1,4 +1,4 @@
-# Whisgo Mobile - AI-Powered Transcription Tool  
+# Whisgo Mobile - Whisper-Powered Instant Transcription Tool  
 
 Whisgo Mobile is a cross-platform transcription app for **Android** and **iOS**, powered by **Capacitor**. It enables quick audio recording and transcription using the **Groq API**, providing an intuitive and seamless experience on mobile devices.  
 
